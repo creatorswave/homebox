@@ -87,6 +87,24 @@ jobs:
         env:
           HOMEBOX_URL: http://localhost:7745
 
+      # Step: Persist Tokens for Later Use
+      - name: Persist Tokens
+        if: success()
+        run: |
+          # Validate token files
+          if [ ! -f /tmp/group1_user1_token.txt ]; then
+            echo "Error: group1_user1_token.txt file not found!"
+            exit 1
+          fi
+          if [ ! -f /tmp/group1_invite_token.txt ]; then
+            echo "Error: group1_invite_token.txt file not found!"
+            exit 1
+          fi
+          
+          # Read tokens and save to output
+          echo "::set-output name=group1_user1_token::$(cat /tmp/group1_user1_token.txt)"
+          echo "::set-output name=group1_invite_token::$(cat /tmp/group1_invite_token.txt)"
+
       - name: Validate test data creation
         run: |
           echo "Verifying test data was created..."
