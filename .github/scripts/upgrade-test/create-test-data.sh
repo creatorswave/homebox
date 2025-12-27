@@ -64,15 +64,25 @@ register_user() {
     local name=$2
     local password=$3
     local group_token=$4
-
+    
     echo "Registering user: $email"
+
     local payload="{\"email\":\"$email\",\"name\":\"$name\",\"password\":\"$password\""
     if [ -n "$group_token" ]; then
         payload="$payload,\"groupToken\":\"$group_token\""
     fi
     payload="$payload}"
 
-    api_call "POST" "/users/register" "$payload"
+    local response=$(curl -s -X POST \
+        -H "Content-Type: application/json" \
+        -d "$payload" \
+        "$API_URL/users/register")
+
+    # Debugging: Print the full raw response
+    echo "Raw Response: $response"
+
+    # Return the response for further processing
+    echo "$response"
 }
 
 # Main logic for creating test data
