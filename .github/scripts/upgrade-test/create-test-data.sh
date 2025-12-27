@@ -91,13 +91,23 @@ initialize_test_data
 # Group 1: Create 5 users
 echo "=== Creating Group 1 Users ==="
 group1_user1_response=$(register_user "user1@homebox.test" "User One" "password123")
+# Extract and validate fields
 group1_user1_token=$(echo "$group1_user1_response" | jq -r '.token // empty')
 group1_invite_token=$(echo "$group1_user1_response" | jq -r '.group.inviteToken // empty')
 
+# Debugging: Ensure both fields are extracted successfully
 if [ -z "$group1_user1_token" ]; then
-    echo "Failed to register the first group user" >&2
+    echo "Error: No user token was found in the registration response!" >&2
     exit 1
 fi
+
+if [ -z "$group1_invite_token" ]; then
+    echo "Warning: No group invite token found!" >&2
+fi
+
+echo "User Token: $group1_user1_token"
+echo "Group Invite Token: $group1_invite_token"
+
 add_to_test_data "users" "{\"email\": \"user1@homebox.test\", \"token\": \"$group1_user1_token\", \"group\": 1}"
 
 # Add 4 more users to the same group
